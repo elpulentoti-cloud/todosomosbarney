@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagnóstico Financiero Universal</title>
+
+<style>
+:root{
+--azul:#0b1c2d;
+--dorado:#c6a85e;
+--verde:#1f7a3e;
+--naranja:#b36b00;
+--rojo:#a10d0d;
+}
+
+body{
+margin:0;
+font-family:Arial, sans-serif;
+background:var(--azul);
+color:white;
+}
+
+.container{
+max-width:1000px;
+margin:auto;
+padding:20px;
+}
+
+.panel{
+background:white;
+color:#222;
+padding:25px;
+border-radius:8px;
+box-shadow:0 0 20px rgba(0,0,0,0.4);
+}
+
+h1{
+text-align:center;
+color:var(--dorado);
+}
+
+h2{
+border-left:5px solid var(--dorado);
+padding-left:10px;
+margin-top:30px;
+}
+
+input{
+width:100%;
+padding:8px;
+margin-top:5px;
+margin-bottom:10px;
+border:1px solid #ccc;
+border-radius:4px;
+}
+
+small{
+color:#555;
+display:block;
+margin-bottom:15px;
+}
+
+button{
+background:var(--dorado);
+color:black;
+padding:12px;
+border:none;
+width:100%;
+font-weight:bold;
+border-radius:4px;
+cursor:pointer;
+margin-top:15px;
+}
+
+.resultado{
+margin-top:25px;
+padding:20px;
+border-radius:6px;
+display:none;
+}
+
+.verde{border-left:8px solid var(--verde);}
+.naranja{border-left:8px solid var(--naranja);}
+.rojo{border-left:8px solid var(--rojo);}
+
+.simbolo{
+text-align:center;
+font-size:22px;
+color:var(--dorado);
+margin-bottom:10px;
+}
+
+@media(max-width:768px){
+.container{padding:10px;}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>✦ DIAGNÓSTICO FINANCIERO UNIVERSAL ✦</h1>
+
+<div class="panel">
+
+<p><b>Instrucciones:</b>  
+Funciona en cualquier moneda. Solo use la misma moneda en todos los campos.</p>
+
+<h2>▢ Estado de Resultados</h2>
+
+Ventas Totales:
+<input type="number" id="ventas" value="1000000">
+
+Costo de Ventas:
+<input type="number" id="costo" value="550000">
+
+Gastos Operativos:
+<input type="number" id="gastos_op" value="250000">
+
+Depreciación:
+<input type="number" id="depreciacion" value="30000">
+
+<h2>△ Financiamiento</h2>
+
+Gastos Financieros:
+<input type="number" id="gastos_fin" value="20000">
+
+Productos Financieros:
+<input type="number" id="prod_fin" value="2000">
+
+<h2>◯ Balance General</h2>
+
+Activo Circulante:
+<input type="number" id="ac" value="400000">
+
+Pasivo Circulante:
+<input type="number" id="pc" value="250000">
+
+<h2>✦ Ciclo de Efectivo</h2>
+
+Días Inventario:
+<input type="number" id="dri" value="30">
+
+Días Cobro:
+<input type="number" id="drc" value="20">
+
+Días Pago:
+<input type="number" id="drp" value="35">
+
+<button onclick="analizar()">Analizar Empresa</button>
+
+<div id="resultado" class="resultado">
+<div class="simbolo">▢ △ ◯ ✦</div>
+<div id="contenido"></div>
+</div>
+
+</div>
+</div>
+
+<script>
+
+function analizar(){
+
+let ventas = parseFloat(document.getElementById("ventas").value) || 0;
+let costo = parseFloat(document.getElementById("costo").value) || 0;
+let gastos_op = parseFloat(document.getElementById("gastos_op").value) || 0;
+let depreciacion = parseFloat(document.getElementById("depreciacion").value) || 0;
+let gastos_fin = parseFloat(document.getElementById("gastos_fin").value) || 0;
+let prod_fin = parseFloat(document.getElementById("prod_fin").value) || 0;
+let ac = parseFloat(document.getElementById("ac").value) || 0;
+let pc = parseFloat(document.getElementById("pc").value) || 0;
+let dri = parseFloat(document.getElementById("dri").value) || 0;
+let drc = parseFloat(document.getElementById("drc").value) || 0;
+let drp = parseFloat(document.getElementById("drp").value) || 0;
+
+let utilidad_bruta = ventas - costo;
+let ebitda = utilidad_bruta - gastos_op;
+let ebit = ebitda - depreciacion;
+let ebt = ebit + prod_fin - gastos_fin;
+let capital_trabajo = ac - pc;
+let ciclo = dri + drc - drp;
+
+let margen = ventas !== 0 ? (ebitda/ventas)*100 : 0;
+let liquidez = pc !== 0 ? ac/pc : 0;
+let cobertura = gastos_fin !== 0 ? ebit/gastos_fin : 0;
+
+let riesgo = "Empresa Estable";
+let clase = "verde";
+
+if(ebt < 0 || liquidez < 1 || cobertura < 1){
+riesgo = "Riesgo Financiero Alto";
+clase = "rojo";
+}
+else if(margen < 10 || liquidez < 1.3){
+riesgo = "Zona de Atención";
+clase = "naranja";
+}
+
+let resultadoDiv = document.getElementById("resultado");
+resultadoDiv.className = "resultado " + clase;
+resultadoDiv.style.display = "block";
+
+document.getElementById("contenido").innerHTML = `
+<b>Utilidad Operativa (EBITDA):</b> ${ebitda.toFixed(2)}<br><br>
+<b>Resultado antes de impuestos:</b> ${ebt.toFixed(2)}<br><br>
+<b>Capital de Trabajo:</b> ${capital_trabajo.toFixed(2)}<br><br>
+<b>Liquidez:</b> ${liquidez.toFixed(2)}<br><br>
+<b>Cobertura de Deuda:</b> ${cobertura.toFixed(2)}<br><br>
+<b>Ciclo de Efectivo:</b> ${ciclo} días<br><br>
+<h2>Diagnóstico: ${riesgo}</h2>
+`;
+
+}
+
+</script>
+
+</body>
+</html>
